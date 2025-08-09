@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Do you love me?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root { --bg1:#ffafbd; --bg2:#ffc3a0; --accent:#ff3b6b; --ink:#1b1b1b; }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;-webkit-tap-highlight-color:transparent}
+    body{display:grid;place-items:center;background:linear-gradient(135deg,var(--bg1),var(--bg2));font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink);overflow:hidden}
+    .card{width:min(640px,94vw);background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-radius:20px;padding:22px 16px 24px;box-shadow:0 20px 60px rgba(0,0,0,.15);text-align:center}
+    h1{margin:0 0 8px;font-size:clamp(22px,6vw,30px)}
+    p.sub{margin:0 0 16px;opacity:.8}
+    .row{position:relative;display:flex;justify-content:center;align-items:center;height:64px;margin-top:6px;touch-action:manipulation}
+    button{border:none;border-radius:999px;padding:14px 22px;min-height:48px;min-width:96px;font-size:18px;line-height:1;cursor:pointer;user-select:none;box-shadow:0 8px 20px rgba(0,0,0,.12);background:#fff;color:#555}
+    #yes{background:var(--accent);color:#fff;margin-right:16px;box-shadow:0 10px 24px rgba(255,59,107,.35)}
+    #no{position:absolute}
+    .hint{margin-top:10px;min-height:20px;color:#7a7a7a}
+    .final{display:none;margin-top:14px;font-weight:800;color:var(--accent);font-size:clamp(22px,6vw,30px);text-shadow:0 2px 0 rgba(255,255,255,.65);animation:glow 2.6s ease-in-out infinite}
+    @keyframes glow{0%,100%{text-shadow:0 0 12px rgba(255,47,109,.35)}50%{text-shadow:0 0 22px rgba(255,47,109,.6)}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Do you love me? 🥹💖</h1>
+    <p class="sub">Be honest… there’s only one right answer 😇</p>
+    <div class="row" id="wrap">
+      <button id="yes">Yes 😊</button>
+      <button id="no">No 🙃</button>
+    </div>
+    <div class="hint" id="hint"></div>
+    <div class="final" id="final">I love you so much! 💞</div>
+  </div>
+
+  <script>
+    // Confetti best‑practice: custom canvas + resize/worker for smoothness
+    const cnv = document.createElement('canvas');
+    Object.assign(cnv.style,{position:'fixed',inset:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:9999});
+    document.body.appendChild(cnv);
+    const conf = confetti.create(cnv,{resize:true,useWorker:true,disableForReducedMotion:true}); /* doc‑recommended options */
+    function celebrate(){
+      const end = Date.now()+1400;
+      (function frame(){
+        conf({particleCount:5,angle:55,spread:70,origin:{x:0},startVelocity:25,gravity:.95,decay:.92,scalar:.9});
+        conf({particleCount:5,angle:125,spread:70,origin:{x:1},startVelocity:25,gravity:.95,decay:.92,scalar:.9});
+        if(Date.now()<end) requestAnimationFrame(frame);
+      })();
+      conf({particleCount:120,spread:80,origin:{y:.6},startVelocity:24,gravity:1,decay:.92,scalar:.95});
+    }
+
+    const wrap = document.getElementById('wrap');
+    const yes = document.getElementById('yes');
+    const no = document.getElementById('no');
+    const hint = document.getElementById('hint');
+    const finalMsg = document.getElementById('final');
+
+    const lines = [
+      "Heyy! That’s illegal here 🤨",
+      "Nice try… but NO is not available 😏",
+      "Button not found. Try 'Yes' 😉",
+      "404: No not allowed 🚫",
+      "System error: only 'Yes' works 😂",
+    ];
+
+    function placeNoInitial(){
+      const yesRect = yes.getBoundingClientRect();
+      no.style.left = (yesRect.width + 12) + 'px';
+      no.style.top = '0px';
+    }
+    function dodge(){
+      const wrapRect = wrap.getBoundingClientRect();
+      const rect = no.getBoundingClientRect();
+      const maxX = wrapRect.width - rect.width;
+      const maxY = wrapRect.height - rect.height;
+      const pad = 50;
+      const x = Math.floor(Math.random()*(maxX+pad)) - pad/2;
+      const y = Math.floor(Math.random()*(maxY+pad)) - pad/2;
+      no.style.left = Math.max(-pad/2, Math.min(x, maxX+pad/2)) + 'px';
+      no.style.top  = Math.max(-pad/2, Math.min(y, maxY+pad/2)) + 'px';
+      if(Math.random()<0.5) hint.textContent = lines[Math.floor(Math.random()*lines.length)];
+    }
+    function sayYes(){
+      hint.textContent = '';
+      finalMsg.style.display = 'block';
+      celebrate();
+      setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),100);
+    }
+
+    // Touch‑first for mobile responsiveness
+    yes.addEventListener('touchstart', e=>{e.preventDefault(); sayYes();},{passive:false});
+    yes.addEventListener('click', sayYes);
+    no.addEventListener('mouseenter', dodge); // desktop fun
+    no.addEventListener('touchstart', e=>{e.preventDefault(); dodge();},{passive:false});
+    no.addEventListener('click', e=>{e.preventDefault(); dodge();});
+
+    window.addEventListener('load', placeNoInitial);
+    window.addEventListener('resize', placeNoInitial);
+  </script>
+</body>
+</html>
