@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Idea to software</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#15171A;--paper:#F4F2EE;--grey:#8A8D91;--accent:#C63D1F}
+*{margin:0;box-sizing:border-box}
+body{width:1080px;height:1920px;background:var(--ink);color:var(--paper);font-family:'IBM Plex Sans',sans-serif;overflow:hidden;position:relative}
+.s{position:absolute;left:96px;right:96px;opacity:0}
+.big{font-family:'Source Serif 4',Georgia,serif;font-size:132px;line-height:1.05;font-weight:400}
+.rule{height:2px;background:var(--grey);transform-origin:left;transform:scaleX(0)}
+.row{top:0}
+.n{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:40px}
+.t{font-family:'Source Serif 4',Georgia,serif;font-size:96px}
+.d{color:var(--grey);font-size:34px;margin-top:10px}
+.h{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:44px}
+</style></head><body>
+<div class="s big" id="a" style="top:700px">Your idea.</div>
+<div class="s rule" id="ar" style="top:900px;opacity:1"></div>
+<div id="steps"></div>
+<div class="s big" id="c" style="top:700px">DM to build<br>your vision.</div>
+<div class="s h" id="h" style="top:1100px">@aethos.engineering</div>
+<script>
+const S=[["01","Discover","We learn what you need."],["02","Design","We shape how it works."],["03","Build","We write it, properly."],["04","Ship","It goes live."]];
+const host=document.getElementById('steps');
+S.forEach((s,i)=>{const top=420+i*330;host.insertAdjacentHTML('beforeend',
+`<div class="s" id="r${i}" style="top:${top}px"><div class="n">${s[0]}</div><div class="t">${s[1]}</div><div class="d">${s[2]}</div></div>
+<div class="s rule" id="l${i}" style="top:${top+300}px;opacity:1"></div>`)});
+const cl=x=>Math.min(1,Math.max(0,x)),ease=x=>1-Math.pow(1-cl(x),3);
+// fade in over [s,s+d], optional fade out at end
+function show(el,t,s,d,e){let o=ease((t-s)/d);if(e!=null)o=Math.min(o,1-ease((t-e)/0.4));el.style.opacity=o;el.style.transform=`translateY(${(1-o)*24}px)`}
+window.render=t=>{
+ const g=id=>document.getElementById(id);
+ show(g('a'),t,0.3,0.8,3.2);g('ar').style.transform=`scaleX(${ease((t-0.8)/1.4)})`;g('ar').style.opacity=t<3.6?1:0;
+ S.forEach((_,i)=>{const s=3.6+i*1.9;show(g('r'+i),t,s,0.7,12.0);g('l'+i).style.transform=`scaleX(${ease((t-s-0.3)/0.9)})`;g('l'+i).style.opacity=t<12.4?1:0});
+ show(g('c'),t,12.6,0.8);show(g('h'),t,13.6,0.8);
+};
+window.render(0);
+</script></body></html>
